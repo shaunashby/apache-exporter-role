@@ -1,0 +1,36 @@
+---
+# tasks file for apache-exporter-role
+
+# Download apache_exporter binary
+- name: Check latest apache_exporter
+  uri:
+    url: https://api.github.com/repos/shumbashi/httpd_exporter/releases/latest
+    return_content: true
+  register: apacheexporter_latest
+  become: true
+
+- name: "Installing apache_exporter {{ apacheexporter_latest.json.tag_name }}"
+  loop: "{{ apacheexporter_latest.json.assets }}"
+  when: "'linux-amd64' in item.name"
+  get_url:
+    url: "{{ item.browser_download_url }}"
+    dest: "/usr/local/bin/apache_exporter"
+    mode: "+x"
+  become: true
+
+# Create systemd service file from template
+- name: Create systemd service file from template
+  template:
+    dest: /etc/systemd/system/apache_exporter.service
+    src: apache_exporter.service.j2
+  become: true
+
+# Enable and start service
+
+- name: Enable and start service
+  systemd:
+    name: apache_exporter
+    enabled: true
+    state: started
+    daemon_reload: yes
+  become: true
