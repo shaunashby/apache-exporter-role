@@ -31,6 +31,6 @@
   systemd:
     name: apache_exporter
     enabled: true
-    state: started
+    state: restarted
     daemon_reload: yes
   become: true
