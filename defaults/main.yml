@@ -2,4 +2,4 @@
 # defaults file for apache-exporter-role
 
 apache_exporter_scrape_uri: "http://127.0.0.1/server-status?auto"
-apache_exporter_port: 9117
+apache_exporter_telemetry_address: "0.0.0.0:9117"
