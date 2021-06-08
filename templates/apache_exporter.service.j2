@@ -9,8 +9,8 @@ Type=simple
 ExecReload=/bin/kill -HUP $MAINPID
 Restart=on-failure
 ExecStart=/usr/local/bin/apache_exporter \
-    -scrape_uri "{{ apache_exporter_scrape_url }}" \
-    -telemetry.address ":{{ apache_exporter_port }}"
+    --scrape_uri "{{ apache_exporter_scrape_uri }}" \
+    --telemetry.address "{{ apache_exporter_telemetry_address }}"
 
 [Install]
 WantedBy=multi-user.target

@@ -1,5 +1,5 @@
 ---
 # defaults file for apache-exporter-role
 
-apache_exporter_scrape_url: "http://127.0.0.1/whm-server-status"
-apache_exporter_port: 9102
+apache_exporter_scrape_uri: "http://127.0.0.1/server-status?auto"
+apache_exporter_port: 9117
