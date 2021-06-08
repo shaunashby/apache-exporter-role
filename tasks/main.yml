@@ -1,22 +1,41 @@
 ---
 # tasks file for apache-exporter-role
 
-# Download apache_exporter binary
-- name: Check latest apache_exporter
-  uri:
-    url: https://github.com/Lusitaniae/apache_exporter/releases/latest
-    return_content: true
-  register: apacheexporter_latest
-  become: true
+# Download apache_exporter binary and install it
+- name: Install apache_exporter
+  block:
+    - name: Download apache_exporter tarball to local folder
+      become: false
+      get_url:
+        url: "https://github.com/Lusitaniae/apache_exporter/releases/download/v0.9.0/apache_exporter-0.9.0.linux-amd64.tar.gz"
+        dest: "/tmp/apache_exporter-0.9.0.linux-amd64.tar.gz"
+        checksum: "sha256:497e4753f2658393ae8d51bc6fe4539857416c71a9c7f87a56a6e095d66b2373"
+      register: _download_archive
+      until: _download_archive is succeeded
+      retries: 5
+      delay: 2
+      delegate_to: localhost
+      check_mode: false
 
-- name: "Installing apache_exporter {{ apacheexporter_latest.json.tag_name }}"
-  loop: "{{ apacheexporter_latest.json.assets }}"
-  when: "'linux-amd64' in item.name"
-  get_url:
-    url: "{{ item.browser_download_url }}"
-    dest: "/usr/local/bin/apache_exporter"
-    mode: "0755"
-  become: true
+    - name: Unpack apache_exporter binary tarball
+      become: false
+      unarchive:
+        src: "/tmp/apache_exporter-0.9.0.linux-amd64.tar.gz"
+        dest: "/tmp"
+        creates: "/tmp/apache_exporter-0.9.0.linux-amd64/apache_exporter"
+      delegate_to: localhost
+      check_mode: false
+
+    - name: "Install apache_exporter v0.9.0"
+      become: true
+      copy:
+        src: "/tmp/apache_exporter-0.9.0.linux-amd64/apache_exporter"
+        dest: "/usr/local/bin/apache_exporter"
+        mode: 0755
+        owner: root
+        group: root
+      notify:
+        - restart apache_exporter
 
 # Create systemd service file from template
 - name: Create systemd service file from template
