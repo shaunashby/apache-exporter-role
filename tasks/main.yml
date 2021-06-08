@@ -4,7 +4,7 @@
 # Download apache_exporter binary
 - name: Check latest apache_exporter
   uri:
-    url: https://api.github.com/repos/shumbashi/httpd_exporter/releases/latest
+    url: https://github.com/Lusitaniae/apache_exporter/releases/latest
     return_content: true
   register: apacheexporter_latest
   become: true
@@ -15,7 +15,7 @@
   get_url:
     url: "{{ item.browser_download_url }}"
     dest: "/usr/local/bin/apache_exporter"
-    mode: "+x"
+    mode: "0755"
   become: true
 
 # Create systemd service file from template
