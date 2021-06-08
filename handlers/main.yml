@@ -1,2 +1,14 @@
 ---
 # handlers file for apache-exporter-role
+- name: restart apache_exporter
+  become: true
+  systemd:
+    daemon_reload: true
+    name: apache_exporter
+    state: restarted
+
+- name: reload apache_exporter
+  become: true
+  systemd:
+    name: apache_exporter
+    state: reloaded
